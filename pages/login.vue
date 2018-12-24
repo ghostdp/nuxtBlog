@@ -59,7 +59,7 @@ export default {
           if (valid) {
             //alert('submit!');
 
-			this.$axios.get('/api/login',{
+			   this.$axios.get('/api/login',{
               params : {
                 username : this.ruleForm2.username,
                 password : this.ruleForm2.password

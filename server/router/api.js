@@ -1,6 +1,11 @@
 var express = require('express');
+var multer  = require('multer');
+var fs = require('fs');
 var UserModel = require('../model/users.js');
+var BannerModel = require('../model/banners.js');
 var router = express.Router();
+
+var upload = multer({ dest: 'static/uploads/' });
 
 router.get('/register', function(req, res, next) {
 	let username = req.query.username;
@@ -64,6 +69,48 @@ router.get('/isLogin' , function(req,res,next){
 router.get('/logout',function(req,res,next){
 	req.session.destroy();
 	res.send({ code : 0 });
+});
+
+router.post('/upload', upload.single('file') ,(req,res)=>{
+	//console.log(111, req.file );
+	fs.rename('static/uploads/' + req.file.filename , 'static/uploads/'+ req.session.username +'.jpg',()=>{
+		res.send({ code : 0 });
+	});
+});
+
+router.get('/banner',(req,res)=>{
+	
+	var title = req.query.title;
+	var username = req.session.username;
+
+	BannerModel.findOne({ username }).then((info)=>{
+		if( info ){
+			BannerModel.updateOne({ username } , { $set : { title } }).then((info)=>{
+				res.send({ "code" : 0 });
+			});
+		}
+		else{
+			BannerModel({
+				username,
+				title
+			}).save().then((info)=>{
+				res.send({ code : 0 });
+			});
+		}
+	});
+
+});
+
+router.get('/getBanner',(req,res)=>{
+	var username = req.query.id;
+	BannerModel.findOne({ username }).then((info)=>{
+		if( info ){
+			res.send({ code : 0 , title : info.title });
+		}
+		else{
+			res.send({ code : -1 });
+		}
+	});
 });
 
 module.exports = router;
