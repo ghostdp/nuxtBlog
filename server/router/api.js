@@ -3,6 +3,7 @@ var multer  = require('multer');
 var fs = require('fs');
 var UserModel = require('../model/users.js');
 var BannerModel = require('../model/banners.js');
+var ClassifyModel = require('../model/classifys.js');
 var router = express.Router();
 
 var upload = multer({ dest: 'static/uploads/' });
@@ -112,5 +113,58 @@ router.get('/getBanner',(req,res)=>{
 		}
 	});
 });
+
+router.get('/addClassify',(req,res)=>{
+	var content = req.query.content;
+	var username = req.session.username;
+
+	ClassifyModel.findOne({
+		username
+	}).then((info)=>{
+		if(info){
+			ClassifyModel.updateOne({ username , "contents" : {$ne: { content , state : false } } } , { $push : { contents : { content , state : false } } }).then((info)=>{
+				res.send({ "code" : 0 });
+			});
+		}
+		else{
+			ClassifyModel({
+				contents : [ { content , state : false } ],
+				username
+			}).save().then((info)=>{
+				if(info){
+					res.send({ code : 0 });
+				}
+				else{
+					res.send({ code : -1 });
+				}
+			});
+		}
+	});		
+
+	
+});
+
+router.get('/deleteClassify',(req,res)=>{
+
+});
+
+router.get('/editClassify',(req,res)=>{
+
+});
+
+router.get('/listClassify',(req,res)=>{
+	var username = req.query.username;
+	ClassifyModel.findOne({
+		username
+	}).then((info)=>{
+		if(info){
+			res.send({ code : 0 , contents : info.contents });
+		}
+		else{
+			res.send({ code : -1 });
+		}
+	});		
+});
+
 
 module.exports = router;

@@ -94,7 +94,10 @@
                   type: 'success'
                 });
 	    	}
-	    }
+	    },
+	    fetch ({ store }) {
+		    store.commit('MENU_INDEX','2-1');
+		}
 	}
 </script>
 <style>

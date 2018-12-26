@@ -9,7 +9,11 @@
 	</div>
 </template>
 <script>
-	
+	export default {
+		fetch ({ store }) {
+		    store.commit('MENU_INDEX','1');
+		}
+	}
 </script>
 <style>
 	.blog_address{ margin:30px;}
